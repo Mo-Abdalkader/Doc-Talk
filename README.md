@@ -25,7 +25,7 @@
 
 ## 🚀 Live Demo
 
-👉 **[Try Doc-Talk Now!](https://doc-talk.streamlit.app/)** 👈
+👉 **[Try Doc-Talk Now!](https://docy-talky.streamlit.app/)** 👈
 
 ---
 
@@ -220,4 +220,4 @@ If you find Doc-Talk useful, please consider giving it a star! ⭐
 
 **Built with ❤️ by the community | Powered by 100% free tools**
 
-[🚀 Try the Demo](https://doc-talk.streamlit.app/) | [📖 Documentation](https://doc-talk.streamlit.app/) | [🐛 Report Bug](https://github.com/Mo-Abdalkader/Doc-Talk/issues)
+[🚀 Try the Demo](https://docy-talky.streamlit.app/) | [📖 Documentation](https://docy-talky.streamlit.app/) | [🐛 Report Bug](https://github.com/Mo-Abdalkader/Doc-Talk/issues)
