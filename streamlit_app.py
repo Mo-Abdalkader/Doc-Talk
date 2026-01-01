@@ -1,11 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
-
 import PyPDF2
 import docx
 import io
@@ -156,7 +154,7 @@ def get_relevant_context(query, k=3):
 def generate_response(query, context, api_key):
     """Generate response using Gemini"""
     try:
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         
         prompt = f"""Based on the following context from the document, answer the user's question. 
 If the answer cannot be found in the context, say so clearly.
