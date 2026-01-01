@@ -1,9 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
+
 import PyPDF2
 import docx
 import io
