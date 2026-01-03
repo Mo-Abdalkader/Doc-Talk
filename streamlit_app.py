@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from huggingface_hub import InferenceClient
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -32,18 +32,18 @@ if 'document_processed' not in st.session_state:
 
 def get_api_key():
     """Get API key from secrets or user input"""
-    if 'GEMINI_API_KEY' in st.secrets:
-        return st.secrets['GEMINI_API_KEY']
+    if 'HF_API_KEY' in st.secrets:
+        return st.secrets['HF_API_KEY']
     return None
 
-def configure_gemini(api_key):
-    """Configure Gemini API"""
+def configure_hf_client(api_key):
+    """Configure HuggingFace client"""
     try:
-        genai.configure(api_key=api_key)
-        return True
+        client = InferenceClient(token=api_key)
+        return client
     except Exception as e:
-        st.error(f"Error configuring Gemini API: {str(e)}")
-        return False
+        st.error(f"Error configuring HuggingFace API: {str(e)}")
+        return None
 
 def extract_text_from_pdf(file):
     """Extract text from PDF file"""
@@ -152,9 +152,9 @@ def get_relevant_context(query, k=3):
         return None
 
 def generate_response(query, context, api_key):
-    """Generate response using Gemini"""
+    """Generate response using HuggingFace"""
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash-latest')
+        client = InferenceClient(token=api_key)
         
         prompt = f"""Based on the following context from the document, answer the user's question. 
 If the answer cannot be found in the context, say so clearly.
@@ -166,8 +166,16 @@ Question: {query}
 
 Answer:"""
         
-        response = model.generate_content(prompt)
-        return response.text
+        # Using Llama 3.2 3B Instruct (free and fast)
+        response = client.text_generation(
+            prompt,
+            model="meta-llama/Llama-3.2-3B-Instruct",
+            max_new_tokens=500,
+            temperature=0.7,
+            top_p=0.95,
+        )
+        
+        return response
         
     except Exception as e:
         st.error(f"Error generating response: {str(e)}")
@@ -185,16 +193,17 @@ with st.sidebar:
     api_key = get_api_key()
     if not api_key:
         api_key = st.text_input(
-            "Enter Gemini API Key",
+            "Enter HuggingFace API Key",
             type="password",
-            help="Get your free API key from https://makersuite.google.com/app/apikey"
+            help="Get your free API key from https://huggingface.co/settings/tokens"
         )
     else:
         st.success("✅ API Key loaded from secrets")
     
     if api_key:
-        if configure_gemini(api_key):
-            st.success("✅ Gemini API configured")
+        client = configure_hf_client(api_key)
+        if client:
+            st.success("✅ HuggingFace API configured")
     
     st.divider()
     
@@ -209,7 +218,7 @@ with st.sidebar:
     if uploaded_file and not st.session_state.document_processed:
         if st.button("Process Document", type="primary"):
             if not api_key:
-                st.error("Please enter your Gemini API key first!")
+                st.error("Please enter your HuggingFace API key first!")
             else:
                 process_document(uploaded_file)
     
@@ -239,7 +248,7 @@ with st.sidebar:
 
 # Main chat interface
 if not api_key:
-    st.warning("👈 Please enter your Gemini API key in the sidebar to get started.")
+    st.warning("👈 Please enter your HuggingFace API key in the sidebar to get started.")
 elif not st.session_state.document_processed:
     st.info("👈 Please upload a document in the sidebar to begin chatting.")
 else:
@@ -275,6 +284,6 @@ else:
 st.divider()
 st.markdown("""
 <div style='text-align: center; color: gray; padding: 20px;'>
-    <small>Built with Streamlit, LangChain, FAISS, and Google Gemini | 100% Free to Use</small>
+    <small>Built with Streamlit, LangChain, FAISS, and HuggingFace Llama 3.2 | 100% Free to Use</small>
 </div>
 """, unsafe_allow_html=True)
