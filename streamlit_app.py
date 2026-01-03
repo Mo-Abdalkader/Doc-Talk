@@ -156,7 +156,10 @@ def generate_response(query, context, api_key):
     try:
         client = InferenceClient(token=api_key)
         
-        prompt = f"""Based on the following context from the document, answer the user's question. 
+        messages = [
+            {
+                "role": "user",
+                "content": f"""Based on the following context from the document, answer the user's question. 
 If the answer cannot be found in the context, say so clearly.
 
 Context:
@@ -165,17 +168,18 @@ Context:
 Question: {query}
 
 Answer:"""
+            }
+        ]
         
-        # Using Llama 3.2 3B Instruct (free and fast)
-        response = client.text_generation(
-            prompt,
+        # Using Llama 3.2 3B Instruct with chat completion
+        response = client.chat_completion(
+            messages=messages,
             model="meta-llama/Llama-3.2-3B-Instruct",
-            max_new_tokens=500,
+            max_tokens=500,
             temperature=0.7,
-            top_p=0.95,
         )
         
-        return response
+        return response.choices[0].message.content
         
     except Exception as e:
         st.error(f"Error generating response: {str(e)}")
