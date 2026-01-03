@@ -154,7 +154,7 @@ def get_relevant_context(query, k=3):
 def generate_response(query, context, api_key):
     """Generate response using Gemini"""
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash-latest')
         
         prompt = f"""Based on the following context from the document, answer the user's question. 
 If the answer cannot be found in the context, say so clearly.
